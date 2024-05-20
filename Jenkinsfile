@@ -3,17 +3,19 @@ pipeline {
     stages {
         stage('Build') {
             steps {
-                echo 'Allication build stage...' 
+                echo 'Application build stage...' 
+                sh 'javac program.java'
         }
        }
         stage('Test') {
             steps {
-                echo 'Allication test stage' 
+                echo 'Application test stage' 
         }
         }
         stage('Run') {
             steps {
-                echo 'Allication run stage' 
+                echo 'Application run stage' 
+                sh 'java program'
             }
         }
     }
