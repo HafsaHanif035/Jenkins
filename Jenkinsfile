@@ -3,7 +3,7 @@ pipeline {
 
     environment {
         // Use the credentials ID from Jenkins
-        DEPLOY_CREDENTIALS_ID = 'new-id'
+        GIT_CREDENTIALS_ID = 'new-id'
     }
 
     stages {
@@ -21,35 +21,18 @@ pipeline {
             }
         }
 
-        stage('Build') {
-            steps {
-                // Compile the code
-                sh './gradlew build'
-            }
-        }
-
-        stage('Test') {
-            steps {
-                // Run the tests
-                sh './gradlew test'
-            }
-            post {
-                always {
-                    // Archive the test results
-                    junit 'build/test-results/**/*.xml'
-                }
-            }
-        }
-
-        stage('Deploy') {
+        stage('Display HTML') {
             steps {
                 script {
-                    // Deploy the application using stored credentials
-                    withCredentials([usernamePassword(credentialsId: DEPLOY_CREDENTIALS_ID, usernameVariable: 'DEPLOY_USERNAME', passwordVariable: 'DEPLOY_PASSWORD')]) {
-                        sh """
-                            curl -u ${DEPLOY_USERNAME}:${DEPLOY_PASSWORD} -X POST http://deployment-server/api/deploy
-                        """
-                    }
+                    // Assume the HTML file is in the root of the repository
+                    publishHTML(target: [
+                        reportName: 'Webpage',
+                        reportDir: 'your-project',
+                        reportFiles: 'webpage.html',
+                        keepAll: true,
+                        alwaysLinkToLastBuild: true,
+                        allowMissing: false
+                    ])
                 }
             }
         }
