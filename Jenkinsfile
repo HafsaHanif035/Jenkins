@@ -14,9 +14,10 @@ pipeline {
                     withCredentials([usernamePassword(credentialsId: GIT_CREDENTIALS_ID, usernameVariable: 'GIT_USERNAME', passwordVariable: 'GIT_PASSWORD')]) {
                         sh """
                             git config --global credential.helper store
-                            git clone https://${GIT_USERNAME}:${GIT_PASSWORD}@github.com/your-repo/your-project.git
+                            git clone https://${GIT_USERNAME}:${GIT_PASSWORD}@github.com:HafsaHanif035/Jenkins.git
                         """
                     }
+                    //https://github.com/HafsaHanif035/Jenkins.git
                 }
             }
         }
@@ -27,7 +28,7 @@ pipeline {
                     // Assume the HTML file is in the root of the repository
                     publishHTML(target: [
                         reportName: 'Webpage',
-                        reportDir: 'your-project',
+                        reportDir: 'Jenkins',
                         reportFiles: 'webpage.html',
                         keepAll: true,
                         alwaysLinkToLastBuild: true,
