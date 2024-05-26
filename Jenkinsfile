@@ -3,7 +3,7 @@ pipeline {
 
     environment {
         // GitHub token ID
-        GIT_CREDENTIALS_ID = 'mykey'
+        GIT_CREDENTIALS_ID = '2bcbe8f1c9be4337960ca6fd784e22c9'
     }
 
     stages {
