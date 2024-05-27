@@ -1,68 +1,36 @@
 pipeline {
     agent any
 
-    environment {
-        // GitHub token ID
-        GIT_CREDENTIALS_ID = 'trigger1'
-    }
-
     stages {
-        stage('Check Credentials') {
+        stage('Checkout') {
+            steps {
+                echo 'dsadasf' // Replace with your repository URL
+            }
+        }
+
+        stage('Deploy to Google Cloud') {
             steps {
                 script {
                     try {
-                        withCredentials([file(credentialsId: 'mykey', variable: 'GCP_KEY_FILE')]) {
+                        withCredentials([file(credentialsId: 'key', variable: 'GCP_KEY_FILE')]) {
                             sh 'gcloud auth activate-service-account --key-file=$GCP_KEY_FILE'
-                            echo 'Successfully authenticated with Google service account credentials'
+                            sh 'gcloud config set project engaged-carving-423214-d0' // Replace with your GCP project ID
+                            sh 'gcloud compute ssh hafsahanif613@jenkinserver --zone=us-us-west-4b --command="sudo mkdir -p /var/www/html && sudo chmod 777 /var/www/html"' // Create destination directory and set permissions
+                            sh 'gcloud compute scp web.html hafsahanif613@jenkinserver:/var/www/html --zone=us-west-4b' // Copy file to destination directory
+                            echo 'Successfully deployed web.html to Google Cloud server'
                         }
                     } catch (Exception e) {
                         currentBuild.result = 'FAILURE'
-                        error("Failed to authenticate with Google service account credentials: ${e.message}")
+                        error("Failed to deploy web.html to Google Cloud server: ${e.message}")
                     }
-                }
-            }
-        }
-
-        stage('Checkout') {
-            steps {
-                script {
-                    // Checkout code from GitHub using stored credentials
-                    withCredentials([string(credentialsId: GIT_CREDENTIALS_ID, variable: 'GIT_TOKEN')]) {
-                        sh """
-                            git clone https://${GIT_TOKEN}git@github.com:HafsaHanif035/Jenkins.git
-                        """
-                    }
-                }
-            }
-        }
-
-        stage('Display HTML') {
-            steps {
-                script {
-                    // Publish the HTML file
-                    publishHTML(target: [
-                        reportName: 'Webpage',
-                        reportDir: 'Jenkins',  // Directory where the repository is cloned
-                        reportFiles: 'webpage.html',       // Name of your HTML file
-                        keepAll: true,
-                        alwaysLinkToLastBuild: true,
-                        allowMissing: false
-                    ])
                 }
             }
         }
     }
 
     post {
-        always {
-            // Clean up workspace
-            cleanWs()
-        }
         success {
-            echo 'Successfully built!'
-        }
-        failure {
-            echo 'Build failed!'
+            echo 'Successfully deployed!'
         }
     }
 }
